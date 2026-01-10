@@ -9,10 +9,10 @@
 
 ## Struktur Project
 project-qr/
-│─ app.py
-│─ requirements.txt
-│─ test_api.py
-│─ README.md
+├── app.py
+├── requirements.txt
+├── test_api.py
+├── README.md
 
 ## Instalasi
 
