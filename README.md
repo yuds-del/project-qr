@@ -8,11 +8,13 @@
 - Mudah diintegrasikan dengan frontend atau aplikasi lain
 
 ## Struktur Project
+```text
 project-qr/
 ├── app.py
 ├── requirements.txt
 ├── test_api.py
 ├── README.md
+```
 
 ## Instalasi
 
