@@ -18,7 +18,7 @@ func main() {
 
 	log.Printf("Authorized as %s", bot.Self.UserName)
 
-	qrService := qr.New("http://localhost:5000")
+	qrService := qr.New(os.Getenv("PYTHON_API_URL"))
 	handler := telegram.New(bot, qrService)
 
 	u := tgbot.NewUpdate(0)
