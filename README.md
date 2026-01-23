@@ -14,19 +14,19 @@ Mudah dikembangkan (microservice)
 ```text
 project-qr/
 ├── backend/
-│   ├── go-api/                 # Backend utama (Golang)
-│   │   
-│   │   
-│   │   
-│   │   
-│   │   
-│   │       
-│   │
 │   └── python-api/             # Service QR Code (Flask)
-│       ├── app.py
+│       ├── app.py   
 │       ├── requirements.txt
 │       └── test_api.py
+│      
+│      
 │          
+│   
+│   
+│      
+│       
+│       
+│       
 │
 ├── frontend/                   # Website (Tailwind CSS)
 │   

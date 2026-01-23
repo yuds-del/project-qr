@@ -1,6 +1,8 @@
 # Import Flask untuk membuat API
 from flask import Flask, request, jsonify, send_file
 
+from flask_cors import CORS
+
 # Library untuk membuat QR Code
 import qrcode
 
@@ -9,6 +11,9 @@ import io
 
 # Inisialisasi aplikasi Flask
 app = Flask(__name__)
+
+# IZINKAN SEMUA ORIGIN (DEV MODE)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Endpoint API untuk generate QR Code
 @app.route('/generate-qr', methods=['POST'])
