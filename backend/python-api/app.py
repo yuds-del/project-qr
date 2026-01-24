@@ -1,51 +1,68 @@
-# Import Flask untuk membuat API
-from flask import Flask, request, jsonify, send_file
-
+import io
+from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 
-# Library untuk membuat QR Code
 import qrcode
+from qrcode.image.styledpil import StyledPilImage
+from qrcode.image.styles.moduledrawers import RoundedModuleDrawer
+from PIL import Image
 
-# Library untuk menyimpan gambar di memori (tanpa simpan ke file)
-import io
-
-# Inisialisasi aplikasi Flask
 app = Flask(__name__)
+CORS(app)
 
-# IZINKAN SEMUA ORIGIN (DEV MODE)
-CORS(app, resources={r"/*": {"origins": "*"}})
-
-# Endpoint API untuk generate QR Code
 @app.route('/generate-qr', methods=['POST'])
 def generate_qr():
-    # Mengambil data JSON dari request
-    data = request.json
-
-    # Mengambil nilai 'text' dari JSON
-    text = data.get('text')
-
-    # Validasi jika text kosong
+    text = request.json.get('text')
     if not text:
-        return jsonify({"error": "text is required"}), 400
+        return jsonify({'error': 'text is required'}), 400
 
-    # Membuat QR Code dari text
-    qr = qrcode.make(text)
+    
+    #BUAT QR (SCAN-FRIENDLY)
+    
+    qr = qrcode.QRCode(
+        version=None,  # auto
+        error_correction=qrcode.constants.ERROR_CORRECT_H,
+        box_size=10,
+        border=6  # lebih lega = scan lebih cepat
+    )
+    qr.add_data(text)
+    qr.make(fit=True)
 
-    # Membuat buffer memory untuk menyimpan gambar QR
+    qr_img = qr.make_image(
+        image_factory=StyledPilImage,
+        module_drawer=RoundedModuleDrawer(
+            radius_ratio=0.5  # JANGAN full bulat
+        ),
+        fill_color="black",
+        back_color="white"
+    ).convert("RGB")
+
+    
+    try:
+        logo = Image.open("logo.png").convert("RGBA")
+    except:
+        return jsonify({'error': 'logo.png not found'}), 400
+
+    qr_w, qr_h = qr_img.size
+
+    # logo maksimal 20%
+    logo_size = qr_w // 5
+    logo = logo.resize((logo_size, logo_size), Image.LANCZOS)
+
+    # background putih supaya nyatu & kebaca
+    logo_bg = Image.new("RGBA", logo.size, "WHITE")
+    logo_bg.paste(logo, mask=logo)
+
+    pos = ((qr_w - logo_size) // 2, (qr_h - logo_size) // 2)
+    qr_img.paste(logo_bg, pos)
+
+ 
     buffer = io.BytesIO()
-
-    # Menyimpan QR Code ke buffer dalam format PNG
-    qr.save(buffer, format='PNG')
-
-    # Mengembalikan pointer buffer ke awal
+    qr_img.save(buffer, format="PNG")
     buffer.seek(0)
 
-    # Mengirim file QR Code sebagai response API
-    return send_file(
-        buffer,
-        mimetype='image/png'
-    )
+    return send_file(buffer, mimetype="image/png")
 
-# Menjalankan server Flask
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000, use_reloader=False)
