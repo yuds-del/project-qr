@@ -1,9 +1,9 @@
-package telegram
+package handler
 
 import (
 	"strings"
 
-	"golang-api/internal/qr"
+	qr "golang-api/pkg/util"
 
 	tgbot "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )

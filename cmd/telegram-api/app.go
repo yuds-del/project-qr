@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"golang-api/internal/qr"
-	"golang-api/internal/telegram"
+	handler "golang-api/internal/handler/telegram"
+	qr "golang-api/pkg/util"
 
 	tgbot "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -18,8 +18,8 @@ func main() {
 
 	log.Printf("Authorized as %s", bot.Self.UserName)
 
-	qrService := qr.New(os.Getenv("PYTHON_API_URL"))
-	handler := telegram.New(bot, qrService)
+	qrService := qr.New(os.Getenv("PYTHON_SERVICE_URL"))
+	handler := handler.New(bot, qrService)
 
 	u := tgbot.NewUpdate(0)
 	u.Timeout = 60
