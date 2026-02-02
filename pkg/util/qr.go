@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -27,8 +26,6 @@ func (s *Service) Generate(text string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	url := s.BaseURL + "/generate-qr"
-	log.Println(url)
 	req, err := http.NewRequest(
 		http.MethodPost,
 		s.BaseURL+"/generate-qr",

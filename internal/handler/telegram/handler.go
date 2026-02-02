@@ -40,13 +40,13 @@ func (h *Handler) Handle(update tgbot.Update) {
 	case "/qr":
 		h.handleGenerateQR(update, args)
 	default:
-		h.reply(update, "Unknown command. Available: /generate-qr")
+		h.reply(update, "Unknown command. Available: /qr")
 	}
 }
 
 func (h *Handler) handleGenerateQR(update tgbot.Update, args []string) {
 	if len(args) == 0 {
-		h.reply(update, "Usage: /generate-qr <text>")
+		h.reply(update, "Usage: /qr <text>")
 		return
 	}
 	text := strings.Join(args, " ")
@@ -79,7 +79,7 @@ func (h *Handler) start(update tgbot.Update) {
 		`Saya bisa membantu kamu membuat dan mengelola layanan QR.
 
 Gunakan perintah berikut:
-/generate-qr - Buat QR code
+/qr - Buat QR code
 /help - Bantuan`,
 	)
 	h.Bot.Send(msg)
