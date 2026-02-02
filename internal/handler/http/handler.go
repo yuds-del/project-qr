@@ -14,18 +14,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Request represents the request body for generating a QR code.
-//
-//	@Summary		Generate QR Code
-//	@Description	Generate a QR code from the provided text
-//	@Tags			QR Code
-//	@Accept			json
-//	@Produce		image/png
-//	@Param			text	body		string	true	"Text to encode in QR code"
-//	@Success		200		{file}		binary	"QR Code image"
-//	@Failure		400		{object}	map[string]string	"Invalid Request"
-//	@Failure		500		{object}	map[string]string	"Internal Server Error"
-//	@Router			/api/generate-qr [post]
 type Request struct {
 	Text string `json:"text"`
 }

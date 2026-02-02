@@ -37,7 +37,7 @@ func (h *Handler) Handle(update tgbot.Update) {
 	switch cmd {
 	case "/start":
 		h.start(update)
-	case "/generate-qr":
+	case "/qr":
 		h.handleGenerateQR(update, args)
 	default:
 		h.reply(update, "Unknown command. Available: /generate-qr")
@@ -49,8 +49,9 @@ func (h *Handler) handleGenerateQR(update tgbot.Update, args []string) {
 		h.reply(update, "Usage: /generate-qr <text>")
 		return
 	}
+	text := strings.Join(args, " ")
 
-	data, err := h.QR.Generate(args[0])
+	data, err := h.QR.Generate(text)
 	if err != nil {
 		h.reply(update, err.Error())
 		return
