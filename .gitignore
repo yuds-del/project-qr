@@ -1,5 +1,23 @@
+<<<<<<< HEAD
 apt/
 path/
 .venv
 node_modules/
 package-lock.json
+=======
+# Node
+node_modules/
+package-lock.json
+
+# Env
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env/
+
+# OS
+.DS_Store
+>>>>>>> ec3ad21 (update qr to text (done), json to qr (done))
