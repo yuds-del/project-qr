@@ -99,8 +99,5 @@ def decode_qr():
     except: return jsonify({'error': 'invalid'}), 400
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    app.run(host='0.0.0.0',debug=True, port=5000, use_reloader=False)
-=======
-    app.run(debug=True, port=5000)
->>>>>>> ec3ad21 (update qr to text (done), json to qr (done))
+    app.run(host='0.0.0.0',debug=True, port=5000, use_reloader=False) 
+    
