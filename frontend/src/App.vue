@@ -3,17 +3,12 @@
 
     <!-- MENU -->
     <div class="flex gap-3 mb-6">
-      <button
-        v-for="menu in menus"
-        :key="menu.key"
-        @click="switchMenu(menu.key)"
-        :class="[
-          'px-4 py-2 rounded-full text-sm font-semibold transition-all',
-          activeMenu === menu.key
-            ? 'bg-white text-indigo-600 shadow-md'
-            : 'border border-white/40 text-white hover:bg-white/20'
-        ]"
-      >
+      <button v-for="menu in menus" :key="menu.key" @click="switchMenu(menu.key)" :class="[
+        'px-4 py-2 rounded-full text-sm font-semibold transition-all',
+        activeMenu === menu.key
+          ? 'bg-white text-indigo-600 shadow-md'
+          : 'border border-white/40 text-white hover:bg-white/20'
+      ]">
         {{ menu.label }}
       </button>
     </div>
@@ -24,85 +19,70 @@
         Code Converter
       </h1>
 
-      <!-- ALERT ESTETIK -->
-      <div
-        v-if="alertMessage"
-        :class="[
-          'mb-4 px-4 py-3 rounded-lg text-sm font-medium text-center transition-all',
-          alertType === 'error'
-            ? 'bg-red-500/20 text-red-200 border border-red-400/30'
-            : 'bg-green-500/20 text-green-200 border border-green-400/30'
-        ]"
-      >
+      <!-- ALERT -->
+      <div v-if="alertMessage" :class="[
+        'mb-4 px-4 py-3 rounded-lg text-sm font-medium text-center transition-all',
+        alertType === 'error'
+          ? 'bg-red-500/20 text-red-200 border border-red-400/30'
+          : 'bg-green-500/20 text-green-200 border border-green-400/30'
+      ]">
         {{ alertMessage }}
       </div>
 
       <!-- TEXT → QR -->
       <div v-if="activeMenu === 'text'">
-        <input
-          v-model="text"
-          type="text"
-          placeholder="Masukkan teks atau URL"
-          class="w-full px-4 py-2 rounded-lg bg-white/20 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white mb-4"
-        />
+        <input v-model="text" type="text" placeholder="Masukkan teks atau URL"
+          class="w-full px-4 py-2 rounded-lg bg-white/20 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white mb-4" />
 
-        <button
-          @click="generateTextQR"
-          class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg font-semibold"
-        >
-          Generate QR
+        <button @click="generateTextQR" :disabled="isLoading" class="w-full py-2 rounded-lg font-semibold transition
+          bg-indigo-600 hover:bg-indigo-700
+          disabled:bg-indigo-400 disabled:cursor-not-allowed">
+          <span v-if="!isLoading">Generate QR</span>
+          <span v-else>Generating...</span>
         </button>
       </div>
 
       <!-- JSON → QR -->
       <div v-if="activeMenu === 'json'">
-        <textarea
-          v-model="jsonText"
-          rows="5"
-          placeholder='{"name":"Yuds"}'
-          class="w-full px-4 py-2 rounded-lg bg-white/20 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white mb-4"
-        />
+        <textarea v-model="jsonText" rows="5" placeholder='{"name":"Yuds"}'
+          class="w-full px-4 py-2 rounded-lg bg-white/20 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white mb-4" />
 
-        <button
-          @click="generateJsonQR"
-          class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg font-semibold"
-        >
-          Generate QR
+        <button @click="generateJsonQR" :disabled="isLoading" class="w-full py-2 rounded-lg font-semibold transition
+          bg-indigo-600 hover:bg-indigo-700
+          disabled:bg-indigo-400 disabled:cursor-not-allowed">
+          <span v-if="!isLoading">Generate QR</span>
+          <span v-else>Generating...</span>
         </button>
       </div>
 
       <!-- QR → TEXT -->
       <div v-if="activeMenu === 'decode'" class="space-y-4">
-        <input
-          type="file"
-          accept="image/*"
-          @change="onFileChange"
-          class="w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
-        />
+        <input type="file" accept="image/*" @change="onFileChange" class="w-full text-sm text-white
+          file:mr-4 file:py-2 file:px-4
+          file:rounded-lg file:border-0
+          file:bg-indigo-600 file:text-white
+          hover:file:bg-indigo-700" />
 
-        <button
-          @click="decodeQR"
-          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg"
-        >
+        <button @click="decodeQR" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg">
           Decode QR
         </button>
 
         <div v-if="decodedText" class="mt-4 p-3 rounded-lg bg-white/10">
-          {{ decodedText }}
+          <pre
+            class="max-h-72 overflow-auto whitespace-pre-wrap break-words text-xs text-white bg-black/40 p-3 rounded-lg">{{ prettyDecodedText }}</pre>
         </div>
       </div>
 
-      <!-- HASIL QR -->
-      <div v-if="qrImage" class="mt-6 text-center">
-        <img
-          :src="qrImage"
-          class="mx-auto max-w-[280px] rounded-lg bg-white p-2 shadow-lg"
-        />
-        <a
-          :href="qrImage"
-          download="qr-code.png"
-          class="inline-block mt-4 bg-white text-indigo-600 px-6 py-2 rounded-lg font-bold shadow hover:bg-gray-100 transition"
-        >
+      <!-- LOADING (GLOBAL) -->
+      <div v-if="isLoading" class="flex justify-center mt-5">
+        <div class="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+      </div>
+
+      <!-- HASIL QR (GLOBAL: TEXT & JSON) -->
+      <div v-if="qrImage && !isLoading" class="mt-6 text-center">
+        <img :src="qrImage" class="mx-auto max-w-[280px] rounded-lg bg-white p-2 shadow-lg" />
+        <a :href="qrImage" download="qr-code.png"
+          class="inline-block mt-4 bg-white text-indigo-600 px-6 py-2 rounded-lg font-bold shadow hover:bg-gray-100 transition">
           Download QR
         </a>
       </div>
@@ -116,9 +96,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const activeMenu = ref('text')
+const isLoading = ref(false)
 
 const menus = [
   { key: 'text', label: 'Text → QR' },
@@ -142,6 +123,15 @@ const showAlert = (msg, type = 'error') => {
   setTimeout(() => (alertMessage.value = ''), 3000)
 }
 
+/* PRETTY JSON */
+const prettyDecodedText = computed(() => {
+  try {
+    return JSON.stringify(JSON.parse(decodedText.value), null, 2)
+  } catch {
+    return decodedText.value
+  }
+})
+
 /* SWITCH MENU */
 const switchMenu = (key) => {
   activeMenu.value = key
@@ -157,13 +147,24 @@ const generateTextQR = async () => {
     return
   }
 
-  const res = await fetch('http://127.0.0.1:5000/generate-qr', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: text.value })
-  })
+  try {
+    isLoading.value = true
+    qrImage.value = null
 
-  qrImage.value = URL.createObjectURL(await res.blob())
+    const res = await fetch('http://127.0.0.1:5000/generate-qr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text.value })
+    })
+
+    if (!res.ok) throw new Error()
+
+    qrImage.value = URL.createObjectURL(await res.blob())
+  } catch {
+    showAlert('Gagal generate QR')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 /* JSON → QR */
@@ -181,13 +182,24 @@ const generateJsonQR = async () => {
     return
   }
 
-  const res = await fetch('http://127.0.0.1:5000/generate-qr-from-json', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(parsed)
-  })
+  try {
+    isLoading.value = true
+    qrImage.value = null
 
-  qrImage.value = URL.createObjectURL(await res.blob())
+    const res = await fetch('http://127.0.0.1:5000/generate-qr-from-json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parsed)
+    })
+
+    if (!res.ok) throw new Error()
+
+    qrImage.value = URL.createObjectURL(await res.blob())
+  } catch {
+    showAlert('Gagal generate QR')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 /* QR → TEXT */
@@ -201,15 +213,23 @@ const decodeQR = async () => {
     return
   }
 
-  const formData = new FormData()
-  formData.append('file', selectedFile.value)
+  try {
+    isLoading.value = true   //START LOADING
 
-  const res = await fetch('http://127.0.0.1:5000/decode-qr', {
-    method: 'POST',
-    body: formData
-  })
+    const formData = new FormData()
+    formData.append('file', selectedFile.value)
 
-  const data = await res.json()
-  decodedText.value = data.text || 'QR tidak terbaca'
+    const res = await fetch('http://127.0.0.1:5000/decode-qr', {
+      method: 'POST',
+      body: formData
+    })
+
+    const data = await res.json()
+    decodedText.value = data.text || 'QR tidak terbaca'
+  } catch {
+    showAlert('Gagal decode QR')
+  } finally {
+    isLoading.value = false  //STOP LOADING
+  }
 }
 </script>

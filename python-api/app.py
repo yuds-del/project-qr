@@ -10,6 +10,12 @@ from qrcode.image.styles.moduledrawers import RoundedModuleDrawer
 from pyzbar.pyzbar import decode
 from PIL import Image
 
+from dotenv import load_dotenv
+load_dotenv()
+
+HOST = os.getenv('FLASK_HOST', '0.0.0.0')
+PORT = int(os.getenv('FLASK_PORT', 5000))
+
 app = Flask(__name__)
 CORS(app)
 
@@ -99,5 +105,6 @@ def decode_qr():
     except: return jsonify({'error': 'invalid'}), 400
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True, port=5000, use_reloader=False) 
+    app.run(host=HOST, port=PORT, debug=True)
+
     
