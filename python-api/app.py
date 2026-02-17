@@ -18,6 +18,16 @@ PORT = int(os.getenv('FLASK_PORT', 5000))
 
 app = Flask(__name__)
 CORS(app)
+@app.route('/')
+def home():
+    return jsonify({
+        "status": "API QR Running",
+        "endpoints": [
+            "POST /generate-qr",
+            "POST /generate-qr-from-json",
+            "POST /decode-qr"
+        ]
+    })
 
 # Path absolut agar logo pasti ditemukan oleh sistem
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
